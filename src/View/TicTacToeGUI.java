@@ -31,7 +31,12 @@ public class TicTacToeGUI extends Application implements Observer {
     private final String[] IMAGES = {"view/resources/white_back.png","view/resources/o_image.png","view/resources/x_image.png"};
     private Label lbl;
     private final int BOARD_SIZE = 3;
-    private final String THEIR_TURN = "Select a Box! You Are O";
+    private final String PLAYER_TURN = "Select a Box! You Are O!";
+    private final String COMPUTER_TURN = "It is the computers turn!!";
+    private final String WON = "You won!! Press Play again to play a new game!!";
+    private final String LOST = "You Lost!! Press play again to play a new game!!";
+    private final String TIE = "A TIE!! Press play again to play a new game!!";
+
 
     @Override
     public void init(){
@@ -39,7 +44,7 @@ public class TicTacToeGUI extends Application implements Observer {
         btnList = new Button[9];
         tm.addObserver(this);
         lbl = new Label();
-        lbl.setText(THEIR_TURN);
+        lbl.setText(PLAYER_TURN);
     }
 
     @Override
@@ -97,17 +102,18 @@ public class TicTacToeGUI extends Application implements Observer {
     }
 
     public void compTurn(){
-        lbl.setText("It is the computers turn!!");
-        for(Button b: btnList){
-            b.setDisable(true);
-        }
+        lbl.setText(COMPUTER_TURN);
+        this.disableBtns();
     }
 
     public void playerTurn(){
+        System.out.println("PLATER TURN");
         int[] nL = tm.getNmList();
         for (int i = 0; i < nL.length; i++) {
-            if(nL[i] == 0)
+            if(nL[i] == 0) {
+                System.out.println("set Disable to false on: " + i);
                 btnList[i].setDisable(false);
+            }
         }
 
 
@@ -119,11 +125,15 @@ public class TicTacToeGUI extends Application implements Observer {
         for (int i = 0; i < nL.length; i++) {
             btnList[i].setGraphic(new ImageView(IMAGES[nL[i]]));
         }
-        if(tm.checkWon(1))
+        if(tm.checkTie()) {
+            this.tie();
+        }
+        else if(tm.checkWon(1)) {
             this.won(1);
-        else if(tm.checkWon(2))
+        }
+        else if(tm.checkWon(2)) {
             this.won(2);
-
+        }
         else if (userTurn) {
             compTurn();
             userTurn = false;
@@ -135,9 +145,20 @@ public class TicTacToeGUI extends Application implements Observer {
     }
 
     private void won(int i) {
+        this.disableBtns();
         if(i == 1)
-        lbl.setText("YOU LOSE");
+        lbl.setText(WON);
         else
-            lbl.setText("YOU WIN");
+            lbl.setText(LOST);
+    }
+
+    private void tie(){
+        this.disableBtns();
+        lbl.setText(TIE);
+    }
+
+    private void disableBtns(){
+        for(Button b: btnList)
+            b.setDisable(true);
     }
 }
